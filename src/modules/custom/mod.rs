@@ -203,9 +203,11 @@ impl Module<gtk::Box> for CustomModule {
 
                     let args = event.args.unwrap_or_default();
 
-                    if let Err(err) = script.get_output(Some(&args)).await {
-                        error!("{err:?}");
-                    }
+                    spawn(async move {
+                        if let Err(e) = script.get_output(Some(&args)).await {
+                            error!("{e}");
+                        };
+                    });
                 } else if event.cmd == "popup:toggle" {
                     send_async!(tx, ModuleUpdateEvent::TogglePopup(event.id));
                 } else if event.cmd == "popup:open" {
